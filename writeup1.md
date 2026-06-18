@@ -58,3 +58,55 @@ nmap -p- 192.168.1.146
 </body>
 </html>
 ```
+
+---- 
+
+### gobuster
+
+```sh
+gobuster dir -u http://192.168.1.X -w directory-list-2.3-medium.txt -x php,txt,html
+===============================================================
+Gobuster v3.6
+by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
+===============================================================
+[+] Url:                     http://192.168.1.X
+[+] Method:                  GET
+[+] Threads:                 10
+[+] Wordlist:                directory-list-2.3-medium.txt
+[+] Negative Status codes:   404
+[+] User Agent:              gobuster/3.6
+[+] Extensions:              txt,html,php
+[+] Timeout:                 10s
+===============================================================
+Starting gobuster in directory enumeration mode
+===============================================================
+/index.html           (Status: 200) [Size: 1025]
+/.html                (Status: 403) [Size: 286]
+/forum                (Status: 403) [Size: 286]
+/fonts                (Status: 301) [Size: 314] [--> http://192.168.1.X/fonts/]
+/.html                (Status: 403) [Size: 286]
+/server-status        (Status: 403) [Size: 294]
+```
+
+## https://ip/forum
+
+> ![Warning]
+> to connect at forum don't use http:// is forbidden use https://
+
+![alt](/img/forum.png)
+
+
+
+|   Username |	Type | UID |	Homepage	| E-mail | pwd |
+|----| ---- | --- | --- |----- | ---- | 
+|   root |	root |	 0  | |	| |
+|   admin |	Admin |	 1000  | |	E-mail | |
+|   lmezard |	User | 1040| 	 |		laurie@borntosec.net  | !q\]Ej?*5K5cy*AJ |
+|   qudevide |	User | | 	 |	  | |
+|   thor |	User |	 | | 	  | |
+|   wandre |	User | | 	 |	  | |
+|   zaz |	User |	 | | 	  | |
+
+https://192.168.1.146/forum/index.php
+
+"In order to log in, cookies have to be activated!"

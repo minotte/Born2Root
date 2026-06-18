@@ -108,6 +108,12 @@ DISK_SIZE=8192
 "$VBOX" storageattach "$VM_NAME" ...
 "$VBOX" startvm "$VM_NAME"
 ```
+----
+## Requierement
+
+```sh
+sudo apt install gobuster
+```
 
 ---
 
@@ -117,3 +123,7 @@ This repository is intended for **educational purposes only**.
 
 All techniques and tools should only be used in controlled environments or systems for which you have explicit authorization.
 
+
+## REF
+
+https://www.youtube.com/watch?v=LkcdN7hZOuM 
