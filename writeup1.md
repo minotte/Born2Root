@@ -63,19 +63,20 @@ nmap -p- 192.168.1.146
 
 ### gobuster
 
-```sh
-gobuster dir -u http://192.168.1.X -w directory-list-2.3-medium.txt -x php,txt,html
+```bash
+gobuster dir -u https://192.168.1.64/ -w common.txt -k -x php,bak,txt,sql      
+
 ===============================================================
 Gobuster v3.6
 by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
 ===============================================================
-[+] Url:                     http://192.168.1.X
+[+] Url:                     https://192.168.1.64/
 [+] Method:                  GET
 [+] Threads:                 10
-[+] Wordlist:                directory-list-2.3-medium.txt
+[+] Wordlist:                common.txt
 [+] Negative Status codes:   404
 [+] User Agent:              gobuster/3.6
-[+] Extensions:              txt,html,php
+[+] Extensions:              php,bak,txt,sql
 [+] Timeout:                 10s
 ===============================================================
 Starting gobuster in directory enumeration mode
@@ -85,7 +86,46 @@ Starting gobuster in directory enumeration mode
 /forum                (Status: 403) [Size: 286]
 /fonts                (Status: 301) [Size: 314] [--> http://192.168.1.X/fonts/]
 /.html                (Status: 403) [Size: 286]
+/forum/index.php?mode=lmezard.sql (Status: 200) [Size: 5317]
+/forum/index.php?mode=lmezard.php (Status: 200) [Size: 5317]
+/forum/index.php?mode=login.bak (Status: 200) [Size: 5317]
+/forum/index.php?mode=lmezard.bak (Status: 200) [Size: 5317]
+/forum/index.php?mode=lmezard (Status: 200) [Size: 5317]
+/forum/index.php?mode=login.php (Status: 200) [Size: 5317]
+/forum/index.php?mode=login.sql (Status: 200) [Size: 5317]
+/forum/index.php?mode=login (Status: 200) [Size: 3270]
+/forum/index.php?mode=login.txt (Status: 200) [Size: 5317]
+/forum/index.php?mode=lmezard.txt (Status: 200) [Size: 5317]
+/forum/index.php?mode=qudevide (Status: 200) [Size: 5317]
+/forum/index.php?mode=qudevide.bak (Status: 200) [Size: 5317]
+/forum/index.php?mode=qudevide.txt (Status: 200) [Size: 5317]
+/forum/index.php?mode=qudevide.php (Status: 200) [Size: 5317]
+/forum/index.php?mode=qudevide.sql (Status: 200) [Size: 5317]
+/forum/index.php?mode=thor.txt (Status: 200) [Size: 5317]
+/forum/index.php?mode=thor (Status: 200) [Size: 5317]
+/forum/index.php?mode=thor.php (Status: 200) [Size: 5317]
+/forum/index.php?mode=thor.bak (Status: 200) [Size: 5317]
+/forum/index.php?mode=thor.sql (Status: 200) [Size: 5317]
+/forum/index.php?mode=wandre (Status: 200) [Size: 5317]
+/forum/index.php?mode=wandre.sql (Status: 200) [Size: 5317]
+/forum/index.php?mode=wandre.php (Status: 200) [Size: 5317]
+/forum/index.php?mode=wandre.bak (Status: 200) [Size: 5317]
+/forum/index.php?mode=wandre.txt (Status: 200) [Size: 5317]
+/forum/index.php?mode=zaz (Status: 200) [Size: 5317]
+/forum/index.php?mode=zaz.txt (Status: 200) [Size: 5317]
+/forum/index.php?mode=zaz.php (Status: 200) [Size: 5317]
+/forum/index.php?mode=zaz.sql (Status: 200) [Size: 5317]
+/forum/index.php?mode=zaz.bak (Status: 200) [Size: 5317]
+/forum/index.php      (Status: 200) [Size: 5288]
+/cgi-bin/             (Status: 403) [Size: 289]
+/forum                (Status: 301) [Size: 314] [--> https://192.168.1.64/forum/]
+/phpmyadmin           (Status: 301) [Size: 319] [--> https://192.168.1.64/phpmyadmin/]
 /server-status        (Status: 403) [Size: 294]
+/webmail              (Status: 301) [Size: 316] [--> https://192.168.1.64/webmail/]
+Progress: 23100 / 23105 (99.98%)
+===============================================================
+Finished
+===============================================================
 ```
 
 ## https://ip/forum
