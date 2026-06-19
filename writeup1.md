@@ -135,18 +135,67 @@ Finished
 
 ![alt](/img/forum.png)
 
+When we check the topics, our eyes are attract by "Problem login ?" 
 
+### Problem login ?
+
+that look likes a copy of a pcap file. we can someone (lmezard) trying to become admin and root. The user wanted to show a failled but the user make a mistake and leak his password.
+``Oct 5 08:45:29 BornToSecHackMe sshd[7547]: Failed password for invalid user !q\]Ej?*5K5cy*AJ from 161.202.39.38 port 57764 ssh2``
+
+So we use this information to log in. **lmezard** and `!q\]Ej?*5K5cy*AJ`
+![alt](./img/login.png)
+That works, we can find the [email](#users-informations).
+
+Now go to:
+
+
+## https://ip/webmail
+
+![alt](img/webmail_log.png)
+
+let's try to connect with the email laurie@borntosec.net and the same password **!q\]Ej?*5K5cy*AJ** , lot of person doesn't change their password between the differents applications. 
+
+We can see an email with the subject ***DB Access***
+
+![alt](img/mail.png)
+
+let's connect at the database with this informationm user = **root** pwd = ``Fg-'kKXBj87E:aJ$``.
+
+## https://ip/phpmyadmin
+
+We can update our [users informations](#users-informations) with this  localhost->forum_db->mlf2_userdata
+
+there is *user_pw*, we try to decrypt the password of lmezard because we now the **clear pwd** but we didn't found. On ``https://192.168.1.146/forum/index.php?mode=user&action=edit_profile`` we can modifie the password, that change in the DB but not for the webmail service.
+
+So we know the clear pwd of laurie so we can copy from the DB and paste in the pwd of **admin**
+
+Now we can connect in the forum with **admin** and the same password than **lmezzard** 
+
+## Users informations
 
 |   Username |	Type | UID |	Homepage	| E-mail | pwd |
 |----| ---- | --- | --- |----- | ---- | 
-|   root |	root |	 0  | |	| |
-|   admin |	Admin |	 1000  | |	E-mail | |
+|   root |	root |	 0  | |	root@mail.borntosec.net| Fg-'kKXBj87E:aJ$|
+|   admin |	Admin |	 1000  | |	admin@borntosec.net | |
 |   lmezard |	User | 1040| 	 |		laurie@borntosec.net  | !q\]Ej?*5K5cy*AJ |
-|   qudevide |	User | | 	 |	  | |
-|   thor |	User |	 | | 	  | |
-|   wandre |	User | | 	 |	  | |
-|   zaz |	User |	 | | 	  | |
+|   qudevide |	User | | 	 |	qudevide@borntosec.net  | |
+|   thor |	User |	 | | 	thor@borntosec.net  | |
+|   wandre |	User | | 	 | wandre@borntosec.net | |
+|   zaz |	User |	 | | zaz@borntosec.net | |
+
+
+
+
+
+
 
 https://192.168.1.146/forum/index.php
 
 "In order to log in, cookies have to be activated!"
+
+ Modifier	Modifier Éditer en place	Copier Copier	Effacer Effacer	1	2	admin		0	0000-00-00	ed0fd64f25f3bd3a54f8d272ba93b6e76ce7f3d0516d551c28	admin@borntosec.net	1					8	2015-10-08 23:08:16	2015-10-08 23:08:16	192.168.1.47	2015-10-08 01:47:03	NULL	0	0	1	0	0	0	0	0						0		2,5,3,1,6,4
+	Modifier Modifier	Modifier Éditer en place	Copier Copier	Effacer Effacer	2	0	qudevide		0	0000-00-00	a12e059d6f4c21c6c5586283c8ecb2b65618ed0a0dc1b302a2	qudevide@borntosec.net	0					1	2015-10-08 02:01:43	2015-10-08 02:02:05	192.168.1.47	2015-10-08 01:52:42	NULL	0	0	1	0	0	0	0	0						0		1,2,3,4
+	Modifier Modifier	Modifier Éditer en place	Copier Copier	Effacer Effacer	3	0	thor		0	0000-00-00	d30668b779542d60c4cde29e7170148198b1623f4453866797	thor@borntosec.net	0					1	2015-10-08 01:58:15	2015-10-08 01:58:41	192.168.1.47	2015-10-08 01:53:16	NULL	0	0	1	0	0	0	0	0						0		1,2,3
+	Modifier Modifier	Modifier Éditer en place	Copier Copier	Effacer Effacer	4	0	wandre		0	0000-00-00	f8562b53084d60efa4208fa50d1ef753ef18e089d2dd56c4ed	wandre@borntosec.net	0					1	2015-10-08 01:57:38	2015-10-08 01:58:03	192.168.1.47	2015-10-08 01:53:48	NULL	0	0	1	0	0	0	0	0						0		1,2
+	Modifier Modifier	Modifier Éditer en place	Copier Copier	Effacer Effacer	5	0	lmezard		0	0000-00-00	0171e7dbcbf4bd21a732fa859ea98a2950b4f8aa1e5365dc90	laurie@borntosec.net	0					5	2026-06-18 15:34:09	2026-06-18 15:34:09	192.168.1.144	2015-10-08 01:54:38	NULL	0	0	1	0	0	0	0	0						0		8,7,5,4,3,2,6,1
+	Modifier Modifier	Modifier Éditer en place	Copier Copier	Effacer Effacer	6	0	zaz		0	0000-00-00	f10b3271bf523f12ebd58ef8581c851991bf0d4b4c4bf49d7c	zaz@borntosec.net	0	
