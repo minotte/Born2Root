@@ -175,9 +175,9 @@ Now we can connect in the forum with **admin** and the same password than **lmez
 
 |   Username |	Type | UID |	Homepage	| E-mail | pwd |
 |----| ---- | --- | --- |----- | ---- | 
-|   root |	root |	 0  | |	root@mail.borntosec.net| Fg-'kKXBj87E:aJ$|
+|   root |	root |	 0  | |	root@mail.borntosec.net|`Fg-'kKXBj87E:aJ$`|
 |   admin |	Admin |	 1000  | |	admin@borntosec.net | |
-|   lmezard |	User | 1040| 	 |		laurie@borntosec.net  | !q\]Ej?*5K5cy*AJ |
+|   lmezard |	User | 1040| 	 |		laurie@borntosec.net  | `!q\]Ej?*5K5cy*AJ` |
 |   qudevide |	User | | 	 |	qudevide@borntosec.net  | |
 |   thor |	User |	 | | 	thor@borntosec.net  | |
 |   wandre |	User | | 	 | wandre@borntosec.net | |
