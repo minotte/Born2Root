@@ -238,7 +238,11 @@ on our terminal
 ```sh
 cat /home/LOOKATME/password
 >> lmezard:G!@M6f4Eatau{sF"
+su lmezard
+>> su: must be run from a terminal
 ```
+with a research on [internet](https://unix.stackexchange.com/questions/594264/error-su-must-be-run-from-a-terminal?__cf_chl_tk=.M.TvcaACsdi9g3YQYNf2kmx6stuQibrlhF7rA6zHQ0-1782222640-1.0.1.1-DY6ddXZzuy2MR7gNUHQnMudBNiy6mAtwy_Sat_SO_EE) we found : ``python -c 'import pty; pty.spawn("/bin/sh")'``
+
 
 ## Users informations
 
@@ -285,3 +289,6 @@ https://192.168.1.146/forum/index.php
 
 - mkfifo:
 	- http://manpagesfr.free.fr/man/man3/mkfifo.3.html
+
+- su problem:
+	- https://unix.stackexchange.com/questions/594264/error-su-must-be-run-from-a-terminal
