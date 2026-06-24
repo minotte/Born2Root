@@ -261,8 +261,66 @@ lmezard@BornToSecHackMe:~$ cat README
 >>Complete this little challenge and use the result as password for user 'laurie' to login in ssh
 ```
 
-The fun file looks like the topic "problem login ?" and we noticed that topic was modified by the admin so we will find usefull datas. 
+There is a lot of files, in shuffle order.
+we cat them 
+```sh
+cat * | grep return
+//file483    return 'a';
+//file697    return 'I';
+    return 'w';
+    return 'n';
+    return 'a';
+    return 'g';
+    return 'e';
+//file161    return 'e';
+//file252    return 't';
+//file163    return 'p';
+//file640    return 'r';
+//file3    return 'h';
+```
+we notice it's c program at **file1** ``#include <stdio.h>`` and the main fonction 
+```c
+int main() {
+	printf("M");
+	printf("Y");
+	printf(" ");
+	printf("P");
+	printf("A");
+	printf("S");
+	printf("S");
+	printf("W");
+	printf("O");
+	printf("R");
+	printf("D");
+	printf(" ");
+	printf("I");
+	printf("S");
+	printf(":");
+	printf(" ");
+	printf("%c",getme1());
+	printf("%c",getme2());
+	printf("%c",getme3());
+	printf("%c",getme4());
+	printf("%c",getme5());
+	printf("%c",getme6());
+	printf("%c",getme7());
+	printf("%c",getme8());
+	printf("%c",getme9());
+	printf("%c",getme10());
+	printf("%c",getme11());
+	printf("%c",getme12());
+	printf("\n");
+	printf("Now SHA-256 it and submit");
+}
+```
+if we seach ``getme1()`` there is `{` but not the `}` we can read //file5 so go to //file6 and we find 	``return 'I';``
 
+we did that for every getme until getme8(), that gave us :
+
+	Iheartpwnage
+SHA-256
+	`330b845f32185747e4f8ca15d40ca59796035c89ea809fb5d30f4da83ecf45a4
+`
 ## Users informations
 
 |   Username |	Type | UID |	Homepage	| E-mail | pwd |

@@ -1,0 +1,229 @@
+phase1:
+
+void phase_1(undefined4 param_1)
+
+{
+  int iVar1;
+  
+  iVar1 = strings_not_equal(param_1,"Public speaking is very easy.");
+  if (iVar1 != 0) {
+    explode_bomb();
+  }
+  return;
+}
+
+
+Public speaking is very easy.
+-----------
+phrase 2 :
+
+
+void read_six_numbers(char *argv,int param_2)
+
+{
+  int i;
+  
+  i = sscanf(argv,"%d %d %d %d %d %d",
+                 param_2,
+                 param_2 + 4,
+                 param_2 + 8,
+                 param_2 + 12,
+                 param_2 + 16,
+                 param_2 + 20);
+  if (i < 6) {
+    explode_bomb();
+  }
+  return;
+
+
+code[1]  = 1
+i = 1
+code[2] = (i + 1) * code[i] = (1 +1 ) * code[1] = 2 * 1 = 2
+i = 2
+code[3] = (i + 1) * code[i] = (2 +1 ) * code[2] = 3 * 2 = 6
+i = 3
+code[4] = (i + 1) * code[i] = (3 +1 ) * code[3] = 4 * 6 = 24
+i = 4
+code[5] = (i + 1) * code[i] = (4 +1 ) * code[4] = 5 * 24 = 120
+i = 5 
+code[6] = 6 * 120 = 720
+
+void phase_2(undefined4 argv)
+
+{
+  int i;
+  int code [7];
+  
+  read_six_numbers(argv,code + 1);
+  if (code[1] != 1) {
+    explode_bomb();
+  }
+  i = 1;
+  do {
+    if (code[i + 1] != (i + 1) * code[i]) {
+      explode_bomb();
+    }
+    i = i + 1;
+  } while (i < 6);
+  return;
+}
+
+1 2 6 24 120 720
+
+--------------------------------------
+
+
+void phase_3(char *param_1)
+
+{
+  int iVar1;
+  char cVar2;
+  uint local_10;
+  char local_9;
+  int local_8;
+  
+  iVar1 = sscanf(param_1,"%d %c %d",&local_10,&local_9,&local_8);
+  if (iVar1 < 3) {
+    explode_bomb();
+  }
+  switch(local_10) {
+  case 0:
+    cVar2 = 'q';
+    if (local_8 != 0x309) {
+      explode_bomb();
+    }
+    break;
+  case 1:
+    cVar2 = 'b';
+    if (local_8 != 0xd6) {
+      explode_bomb();
+    }
+    break;
+  case 2:
+    cVar2 = 'b';
+    if (local_8 != 0x2f3) {
+      explode_bomb();
+    }
+    break;
+  case 3:
+    cVar2 = 'k';
+    if (local_8 != 0xfb) {
+      explode_bomb();
+    }
+    break;
+  case 4:
+    cVar2 = 'o';
+    if (local_8 != 0xa0) {
+      explode_bomb();
+    }
+    break;
+  case 5:
+    cVar2 = 't';
+    if (local_8 != 0x1ca) {
+      explode_bomb();
+    }
+    break;
+  case 6:
+    cVar2 = 'v';
+    if (local_8 != 0x30c) {
+      explode_bomb();
+    }
+    break;
+  case 7:
+    cVar2 = 'b';
+    if (local_8 != 0x20c) {
+      explode_bomb();
+    }
+    break;
+  default:
+    cVar2 = 'x';
+    explode_bomb();
+  }
+  if (cVar2 != local_9) {
+    explode_bomb();
+  }
+  return;
+}
+
+
+----------
+
+phrase 4
+
+
+void phase_4(char *param_1)
+
+{
+  int iVar1;
+  int local_8;
+  
+  iVar1 = sscanf(param_1,"%d",&local_8);
+  if ((iVar1 != 1) || (local_8 < 1)) {
+    explode_bomb();
+  }
+  iVar1 = func4(local_8);
+  if (iVar1 != 0x37) {
+    explode_bomb();
+  }
+  return;
+}
+
+
+
+------
+
+phase5:
+
+
+void phase_5(int param_1)
+
+{
+  int iVar1;
+  undefined local_c [6];
+  undefined local_6;
+  
+  iVar1 = string_length(param_1);
+  if (iVar1 != 6) {
+    explode_bomb();
+  }
+  iVar1 = 0;
+  do {
+    local_c[iVar1] = (&array.123)[(char)(*(byte *)(iVar1 + param_1) & 0xf)];
+    iVar1 = iVar1 + 1;
+  } while (iVar1 < 6);
+  local_6 = 0;
+  iVar1 = strings_not_equal(local_c,"giants");
+  if (iVar1 != 0) {
+    explode_bomb();
+  }
+  return;
+}
+
+
+------
+phase 6 :
+
+
+void phase_5(int param_1)
+
+{
+  int iVar1;
+  undefined local_c [6];
+  undefined local_6;
+  
+  iVar1 = string_length(param_1);
+  if (iVar1 != 6) {
+    explode_bomb();
+  }
+  iVar1 = 0;
+  do {
+    local_c[iVar1] = (&array.123)[(char)(*(byte *)(iVar1 + param_1) & 0xf)];
+    iVar1 = iVar1 + 1;
+  } while (iVar1 < 6);
+  local_6 = 0;
+  iVar1 = strings_not_equal(local_c,"giants");
+  if (iVar1 != 0) {
+    explode_bomb();
+  }
+  return;
+}
