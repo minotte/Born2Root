@@ -24,8 +24,8 @@ void read_six_numbers(char *argv,int param_2)
   int i;
   
   i = sscanf(argv,"%d %d %d %d %d %d",
-                 param_2,
-                 param_2 + 4,
+                 param_2, code[1]
+                 param_2 + 4,code[2]
                  param_2 + 8,
                  param_2 + 12,
                  param_2 + 16,
@@ -43,7 +43,7 @@ void phase_2(undefined4 argv)
   int i;
   int code [7];
   
-  read_six_numbers(argv,code + 1);
+  read_six_numbers(argv, code + 1);
   if (code[1] != 1) {
     explode_bomb();
   }
