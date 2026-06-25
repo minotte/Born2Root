@@ -35,18 +35,7 @@ void read_six_numbers(char *argv,int param_2)
   }
   return;
 
-
-code[1]  = 1
-i = 1
-code[2] = (i + 1) * code[i] = (1 +1 ) * code[1] = 2 * 1 = 2
-i = 2
-code[3] = (i + 1) * code[i] = (2 +1 ) * code[2] = 3 * 2 = 6
-i = 3
-code[4] = (i + 1) * code[i] = (3 +1 ) * code[3] = 4 * 6 = 24
-i = 4
-code[5] = (i + 1) * code[i] = (4 +1 ) * code[4] = 5 * 24 = 120
-i = 5 
-code[6] = 6 * 120 = 720
+[][][][][][]
 
 void phase_2(undefined4 argv)
 
@@ -68,6 +57,20 @@ void phase_2(undefined4 argv)
   return;
 }
 
+
+void resolve
+
+code[1]  = 1
+i = 1
+code[2] = (i + 1) * code[i] = (1 +1 ) * code[1] = 2 * 1 = 2
+i = 2
+code[3] = (i + 1) * code[i] = (2 +1 ) * code[2] = 3 * 2 = 6
+i = 3
+code[4] = (i + 1) * code[i] = (3 +1 ) * code[3] = 4 * 6 = 24
+i = 4
+code[5] = (i + 1) * code[i] = (4 +1 ) * code[4] = 5 * 24 = 120
+i = 5 
+code[6] = 6 * 120 = 720
 1 2 6 24 120 720
 
 --------------------------------------
@@ -145,30 +148,55 @@ void phase_3(char *param_1)
   return;
 }
 
+len(argv) = 3 
+argv[1] = case 
+argv[2] = cVar2(case)
+argv[3] = =  if (local_8 != hex)
+with clue from README we have argv[2] = b
+so case 7 and 0x20c = 524
+7 b 524
 
 ----------
 
 phrase 4
 
 
+int func4(int x)
+
+{
+  int iVar1;
+  int res;
+  
+  if (x < 2) {
+    res = 1;
+  }
+  else {
+    iVar1 = func4(x + -1);
+    res = func4(x + -2);
+    res = res + iVar1;
+  }
+  return res;
+}
+
+
 void phase_4(char *param_1)
 
 {
   int iVar1;
-  int local_8;
+  int x;
   
-  iVar1 = sscanf(param_1,"%d",&local_8);
-  if ((iVar1 != 1) || (local_8 < 1)) {
+  iVar1 = sscanf(param_1,"%d",&x);
+  if ((iVar1 != 1) || (x < 1)) {
     explode_bomb();
   }
-  iVar1 = func4(local_8);
+  iVar1 = func4(x);
   if (iVar1 != 0x37) {
     explode_bomb();
   }
   return;
 }
 
-
+res = 9
 
 ------
 
@@ -178,52 +206,107 @@ phase5:
 void phase_5(int param_1)
 
 {
-  int iVar1;
+  int i;
   undefined local_c [6];
   undefined local_6;
   
-  iVar1 = string_length(param_1);
-  if (iVar1 != 6) {
+  i = string_length(param_1);
+  if (i != 6) {
     explode_bomb();
   }
-  iVar1 = 0;
+  i = 0;
   do {
-    local_c[iVar1] = (&array.123)[(char)(*(byte *)(iVar1 + param_1) & 0xf)];
-    iVar1 = iVar1 + 1;
-  } while (iVar1 < 6);
+    local_c[i] = (&array.123)[(char)(*(byte *)(i + param_1) & 0xf)];
+    i = i + 1;
+  } while (i < 6);
   local_6 = 0;
-  iVar1 = strings_not_equal(local_c,"giants");
-  if (iVar1 != 0) {
+  i = strings_not_equal(local_c,"giants");
+  if (i != 0) {
     explode_bomb();
   }
   return;
 }
 
+param_1 must have 6 char
 
+opekma
+
+./bomb Public speaking is very easy. 1 2 6 24 120 720 7 b 524 9
 ------
 phase 6 :
 
-
-void phase_5(int param_1)
+void read_six_numbers(char *argv,int param_2)
 
 {
-  int iVar1;
-  undefined local_c [6];
-  undefined local_6;
+  int i;
   
-  iVar1 = string_length(param_1);
-  if (iVar1 != 6) {
+  i = sscanf(argv,"%d %d %d %d %d %d",
+                 param_2,
+                 param_2 + 4,
+                 param_2 + 8,
+                 param_2 + 12,
+                 param_2 + 16,
+                 param_2 + 20);
+  if (i < 6) {
     explode_bomb();
   }
-  iVar1 = 0;
+  return;
+
+void phase_6(undefined4 param_1)
+
+{
+  int *piVar1;
+  int iVar2;
+  int *piVar3;
+  int iVar4;
+  undefined1 *local_38;
+  int *local_34 [6];
+  int local_1c [6];
+  
+  local_38 = node1;
+  read_six_numbers(param_1,local_1c);
+  iVar4 = 0;
   do {
-    local_c[iVar1] = (&array.123)[(char)(*(byte *)(iVar1 + param_1) & 0xf)];
-    iVar1 = iVar1 + 1;
-  } while (iVar1 < 6);
-  local_6 = 0;
-  iVar1 = strings_not_equal(local_c,"giants");
-  if (iVar1 != 0) {
-    explode_bomb();
-  }
+    iVar2 = iVar4;
+    if (5 < local_1c[iVar4] - 1U) {
+      explode_bomb();
+    }
+    while (iVar2 = iVar2 + 1, iVar2 < 6) {
+      if (local_1c[iVar4] == local_1c[iVar2]) {
+        explode_bomb();
+      }
+    }
+    iVar4 = iVar4 + 1;
+  } while (iVar4 < 6);
+  iVar4 = 0;
+  do {
+    iVar2 = 1;
+    piVar3 = (int *)local_38;
+    if (1 < local_1c[iVar4]) {
+      do {
+        piVar3 = (int *)piVar3[2];
+        iVar2 = iVar2 + 1;
+      } while (iVar2 < local_1c[iVar4]);
+    }
+    local_34[iVar4] = piVar3;
+    iVar4 = iVar4 + 1;
+  } while (iVar4 < 6);
+  iVar4 = 1;
+  piVar3 = local_34[0];
+  do {
+    piVar1 = local_34[iVar4];
+    piVar3[2] = (int)piVar1;
+    iVar4 = iVar4 + 1;
+    piVar3 = piVar1;
+  } while (iVar4 < 6);
+  piVar1[2] = 0;
+  iVar4 = 0;
+  do {
+    if (*local_34[0] < *(int *)local_34[0][2]) {
+      explode_bomb();
+    }
+    local_34[0] = (int *)local_34[0][2];
+    iVar4 = iVar4 + 1;
+  } while (iVar4 < 5);
   return;
 }
