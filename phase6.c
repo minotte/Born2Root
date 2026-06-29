@@ -7,8 +7,7 @@ struct Node {
 };
 
 
-void read_six_numbers(char *argv,int param_2)
-{
+void read_six_numbers(char *argv,int param_2){
   int i;
   
   i = sscanf(argv,"%d %d %d %d %d %d",
@@ -26,7 +25,6 @@ void read_six_numbers(char *argv,int param_2)
 
 
 void phase_6(int *param_1)
-
 {
   int *piVar1;
   int j;

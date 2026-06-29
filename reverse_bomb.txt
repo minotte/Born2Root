@@ -227,6 +227,19 @@ void phase_5(int param_1)
   return;
 }
 
+	DONC (&array.123)[(char)(*(byte *)(iVar1 + param_1) & 0xf)]  ---> CARACTERE
+		char c = (&array.123)[(char)(*(byte *)(iVar1 + param_1) & 0xf)] 
+			OU 
+		char c = array.123[x]       -----> on doit chercher x
+	
+	int x = (char)(*(byte *)(iVar1 + param_1) & 0xf)
+		----> cast en char (*(byte *)(iVar1 + param_1) & 0xf)
+	
+	byte *b = (iVar1 + param_1) & 0xf
+		param_1 cest un char** de l'input alors surment
+		b = param1[ivar1] & 0xf
+
+
 param_1 must have 6 char
 
 opekma
@@ -310,3 +323,10 @@ void phase_6(undefined4 param_1)
   } while (iVar4 < 5);
   return;
 }
+
+result : 4 2 6 3 1 5
+
+------------------------------------------------------------
+
+Public speaking is very easy.1 2 6 24 120 7207 b 524 9opekma4 2 6 3 1 5 
+Public speaking is very easy.1 2 6 24 120 7207 b 524 9opekma4 2 6 3 1 5 
