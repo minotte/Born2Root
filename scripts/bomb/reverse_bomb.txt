@@ -1,0 +1,432 @@
+phase1:
+
+void phase_1(undefined4 param_1)
+
+{
+  int iVar1;
+  
+  iVar1 = strings_not_equal(param_1,"Public speaking is very easy.");
+  if (iVar1 != 0) {
+    explode_bomb();
+  }
+  return;
+}
+
+
+Public speaking is very easy.
+-----------
+phrase 2 :
+
+
+void read_six_numbers(char *argv,int param_2)
+
+{
+  int i;
+  
+  i = sscanf(argv,"%d %d %d %d %d %d",
+                 param_2, code[1]
+                 param_2 + 4,code[2]
+                 param_2 + 8,
+                 param_2 + 12,
+                 param_2 + 16,
+                 param_2 + 20);
+  if (i < 6) {
+    explode_bomb();
+  }
+  return;
+
+[][][][][][]
+
+void phase_2(undefined4 argv)
+
+{
+  int i;
+  int code [7];
+  
+  read_six_numbers(argv, code + 1);
+  if (code[1] != 1) {
+    explode_bomb();
+  }
+  i = 1;
+  do {
+    if (code[i + 1] != (i + 1) * code[i]) {
+      explode_bomb();
+    }
+    i = i + 1;
+  } while (i < 6);
+  return;
+}
+
+
+void resolve
+
+code[1]  = 1
+i = 1
+code[2] = (i + 1) * code[i] = (1 +1 ) * code[1] = 2 * 1 = 2
+i = 2
+code[3] = (i + 1) * code[i] = (2 +1 ) * code[2] = 3 * 2 = 6
+i = 3
+code[4] = (i + 1) * code[i] = (3 +1 ) * code[3] = 4 * 6 = 24
+i = 4
+code[5] = (i + 1) * code[i] = (4 +1 ) * code[4] = 5 * 24 = 120
+i = 5 
+code[6] = 6 * 120 = 720
+1 2 6 24 120 720
+
+--------------------------------------
+
+
+void phase_3(char *param_1)
+
+{
+  int iVar1;
+  char cVar2;
+  uint local_10;
+  char local_9;
+  int local_8;
+  
+  iVar1 = sscanf(param_1,"%d %c %d",&local_10,&local_9,&local_8);
+  if (iVar1 < 3) {
+    explode_bomb();
+  }
+  switch(local_10) {
+  case 0:
+    cVar2 = 'q';
+    if (local_8 != 0x309) {
+      explode_bomb();
+    }
+    break;
+  case 1:
+    cVar2 = 'b';
+    if (local_8 != 0xd6) {
+      explode_bomb();
+    }
+    break;
+  case 2:
+    cVar2 = 'b';
+    if (local_8 != 0x2f3) {
+      explode_bomb();
+    }
+    break;
+  case 3:
+    cVar2 = 'k';
+    if (local_8 != 0xfb) {
+      explode_bomb();
+    }
+    break;
+  case 4:
+    cVar2 = 'o';
+    if (local_8 != 0xa0) {
+      explode_bomb();
+    }
+    break;
+  case 5:
+    cVar2 = 't';
+    if (local_8 != 0x1ca) {
+      explode_bomb();
+    }
+    break;
+  case 6:
+    cVar2 = 'v';
+    if (local_8 != 0x30c) {
+      explode_bomb();
+    }
+    break;
+  case 7:
+    cVar2 = 'b';
+    if (local_8 != 0x20c) {
+      explode_bomb();
+    }
+    break;
+  default:
+    cVar2 = 'x';
+    explode_bomb();
+  }
+  if (cVar2 != local_9) {
+    explode_bomb();
+  }
+  return;
+}
+
+len(argv) = 3 
+argv[1] = case 
+argv[2] = cVar2(case)
+argv[3] = =  if (local_8 != hex)
+with clue from README we have argv[2] = b
+so case 7 and 0x20c = 524
+7 b 524
+
+----------
+
+phrase 4
+
+
+int func4(int x)
+
+{
+  int iVar1;
+  int res;
+  
+  if (x < 2) {
+    res = 1;
+  }
+  else {
+    iVar1 = func4(x + -1);
+    res = func4(x + -2);
+    res = res + iVar1;
+  }
+  return res;
+}
+
+
+void phase_4(char *param_1)
+
+{
+  int iVar1;
+  int x;
+  
+  iVar1 = sscanf(param_1,"%d",&x);
+  if ((iVar1 != 1) || (x < 1)) {
+    explode_bomb();
+  }
+  iVar1 = func4(x);
+  if (iVar1 != 0x37) {
+    explode_bomb();
+  }
+  return;
+}
+
+res = 9
+
+------
+
+phase5:
+
+
+void phase_5(int param_1)
+
+{
+  int i;
+  undefined local_c [6];
+  undefined local_6;
+  
+  i = string_length(param_1);
+  if (i != 6) {
+    explode_bomb();
+  }
+  i = 0;
+  do {
+    local_c[i] = (&array.123)[(char)(*(byte *)(i + param_1) & 0xf)];
+    i = i + 1;
+  } while (i < 6);
+  local_6 = 0;
+  i = strings_not_equal(local_c,"giants");
+  if (i != 0) {
+    explode_bomb();
+  }
+  return;
+}
+
+	DONC (&array.123)[(char)(*(byte *)(iVar1 + param_1) & 0xf)]  ---> CARACTERE
+		char c = (&array.123)[(char)(*(byte *)(iVar1 + param_1) & 0xf)] 
+			OU 
+		char c = array.123[x]       -----> on doit chercher x
+	
+	int x = (char)(*(byte *)(iVar1 + param_1) & 0xf)
+		----> cast en char (*(byte *)(iVar1 + param_1) & 0xf)
+	
+	byte *b = (iVar1 + param_1) & 0xf
+		param_1 cest un char** de l'input alors surment
+		b = param1[ivar1] & 0xf
+
+
+param_1 must have 6 char
+
+opekma
+
+./bomb Public speaking is very easy. 1 2 6 24 120 720 7 b 524 9
+------
+phase 6 :
+
+void read_six_numbers(char *argv,int param_2)
+
+{
+  int i;
+  
+  i = sscanf(argv,"%d %d %d %d %d %d",
+                 param_2,
+                 param_2 + 4,
+                 param_2 + 8,
+                 param_2 + 12,
+                 param_2 + 16,
+                 param_2 + 20);
+  if (i < 6) {
+    explode_bomb();
+  }
+  return;
+
+void phase_6(undefined4 param_1)
+
+{
+  int *piVar1;
+  int iVar2;
+  int *piVar3;
+  int iVar4;
+  undefined1 *local_38;
+  int *local_34 [6];
+  int local_1c [6];
+  
+  local_38 = node1;
+  read_six_numbers(param_1,local_1c);
+  iVar4 = 0;
+  do {
+    iVar2 = iVar4;
+    if (5 < local_1c[iVar4] - 1U) {
+      explode_bomb();
+    }
+    while (iVar2 = iVar2 + 1, iVar2 < 6) {
+      if (local_1c[iVar4] == local_1c[iVar2]) {
+        explode_bomb();
+      }
+    }
+    iVar4 = iVar4 + 1;
+  } while (iVar4 < 6);
+  iVar4 = 0;
+  do {
+    iVar2 = 1;
+    piVar3 = (int *)local_38;
+    if (1 < local_1c[iVar4]) {
+      do {
+        piVar3 = (int *)piVar3[2];
+        iVar2 = iVar2 + 1;
+      } while (iVar2 < local_1c[iVar4]);
+    }
+    local_34[iVar4] = piVar3;
+    iVar4 = iVar4 + 1;
+  } while (iVar4 < 6);
+  iVar4 = 1;
+  piVar3 = local_34[0];
+  do {
+    piVar1 = local_34[iVar4];
+    piVar3[2] = (int)piVar1;
+    iVar4 = iVar4 + 1;
+    piVar3 = piVar1;
+  } while (iVar4 < 6);
+  piVar1[2] = 0;
+  iVar4 = 0;
+  do {
+    if (*local_34[0] < *(int *)local_34[0][2]) {
+      explode_bomb();
+    }
+    local_34[0] = (int *)local_34[0][2];
+    iVar4 = iVar4 + 1;
+  } while (iVar4 < 5);
+  return;
+}
+/*
+                        node6                                           XREF[1]:     Entry Point(*)  
+0804b230 b0 01 00        undefine
+         00 06 00 
+         00 00 00 
+                        node5                                           XREF[1]:     Entry Point(*)  
+0804b23c d4 00 00        undefine
+         00 05 00 
+         00 00 30 
+                        node4                                           XREF[1]:     Entry Point(*)  
+0804b248 e5 03 00        undefine
+         00 04 00 
+         00 00 3c 
+                        node3                                           XREF[2]:     Entry Point(*), 0804b268(*)  
+0804b254 2d 01 00        undefine
+         00 03 00 
+         00 00 48 
+    0804b254 2d              undefined12Dh                     [0]                               XREF[2]:     Entry Point(*), 0804b268(*)  
+    0804b255 01              undefined101h                     [1]
+    0804b256 00              undefined100h                     [2]
+    0804b257 00              undefined100h                     [3]
+    0804b258 03              undefined103h                     [4]
+    0804b259 00              undefined100h                     [5]
+    0804b25a 00              undefined100h                     [6]
+    0804b25b 00              undefined100h                     [7]
+    0804b25c 48              undefined148h                     [8]           ?  ->  0804b248
+    0804b25d b2              undefined1B2h                     [9]
+    0804b25e 04              undefined104h                     [10]
+    0804b25f 08              undefined108h                     [11]
+                        node2                                           XREF[5]:     Entry Point(*), 
+                                                                                    phase_6:08048e3b(*), 
+                                                                                    phase_6:08048e47(*), 
+                                                                                    phase_6:08048e6c(*), 
+                                                                                    phase_6:08048e73(R)  
+0804b260 d5 02 00 00     undefined4 000002D5h
+0804b264 02              ??         02h
+0804b265 00              ??         00h
+0804b266 00              ??         00h
+0804b267 00              ??         00h
+                        PTR_node3_0804b268                              XREF[4]:     phase_6:08048e30(R), 
+                                                                                    phase_6:08048e55(W), 
+                                                                                    phase_6:08048e70(R), 
+                                                                                    phase_6:08048e7e(R)  
+0804b268 54 b2 04 08     addr       node3
+                        node1[8]                                        XREF[4,1]:   Entry Point(*), 
+                        node1                                                        phase_6:08048da4(*), 
+                                                                                    phase_6:08048e29(*), 
+                                                                                    phase_6:08048e3b(*), 
+                                                                                    phase_6:08048e30(R)  
+0804b26c fd 00 00        undefine
+            00 01 00 
+            00 00 60 
+    0804b26c fd              undefined1FDh                     [0]                               XREF[4]:     Entry Point(*), 
+                                                                                                                phase_6:08048da4(*), 
+                                                                                                                phase_6:08048e29(*), 
+                                                                                                                phase_6:08048e3b(*)  
+    0804b26d 00              undefined100h                     [1]
+    0804b26e 00              undefined100h                     [2]
+    0804b26f 00              undefined100h                     [3]
+    0804b270 01              undefined101h                     [4]
+    0804b271 00              undefined100h                     [5]
+    0804b272 00              undefined100h                     [6]
+    0804b273 00              undefined100h                     [7]
+    0804b274 60              undefined160h                     [8]           ?  ->  0804b260     XREF[1]:     phase_6:08048e30(R)  
+    0804b275 b2              undefined1B2h                     [9]
+    0804b276 04              undefined104h                     [10]
+    0804b277 08              undefined108h                     [11]
+
+    node1 {
+    fd 00 00  00000fd  =  253
+   00 01 00 =   1
+   00 00 60 =   next
+    }
+   node2 {
+    d5 02 00 00     undefined4 000002D5h   = 725
+    02 
+    00
+   }
+    node3 {
+        2d 01 00        12d = 301
+        00 03 00 
+        00 00 48
+   }
+  node4 {
+        e5 03 00  ---> 3e5 = 997
+        00 04 00
+        00 00 3c
+    }
+    node5{
+        d4 00 00 ----> d4 = 212
+        00 05 00
+        00 00 30
+    }
+    node6{
+        b0 01 00 ----> 1b0 = 432
+        00 06 00
+        00 00 00
+    }
+*/
+
+
+result : 4 2 6 3 1 5
+
+------------------------------------------------------------
+
+
+Publicspeakingisveryeasy.126241207207b5249opekma42635

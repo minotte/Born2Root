@@ -1,0 +1,59 @@
+lt   90
+fd  50 
+repeat 170 [
+    fd  1 
+    lt   1
+]
+repeat 170 [
+  rt 1
+  fd 1
+]
+fd  50 
+
+//S
+
+
+fd  210 
+bk 210 
+rt  90
+fd  120 
+
+// L
+
+rt  10
+fd  200 
+rt  150
+fd  200 
+bk 100 
+rt  120
+fd  50 
+
+//A
+
+lt   90
+fd  50 
+repeat 170 [
+    fd  1 
+    lt   1
+]
+repeat 170 [
+  rt 1
+  fd 1
+]
+fd  50 
+
+//S
+
+
+fd  100 
+bk 200 
+fd  100 
+rt  90
+fd  100 
+rt  90
+fd  100 
+bk 200 
+
+//H
+
+Can you digest the message? :)

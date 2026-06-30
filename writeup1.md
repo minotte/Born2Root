@@ -321,6 +321,100 @@ we did that for every getme until getme8(), that gave us :
 SHA-256
 	`330b845f32185747e4f8ca15d40ca59796035c89ea809fb5d30f4da83ecf45a4
 `
+------------------------------
+
+## Laurie's session 
+
+![Laurie's session](./img/Laurie_ssh.png)
+
+> [!NOTE] 
+> keep in mind this hint. 
+
+The “Bomb” program consists of 6 phases that must be defused by solving the puzzles. To do this, we will use Ghidra to reverse it.
+
+The main function call [phase function](./scripts/bomb/reverse_bomb.txt).
+
+### Phase_1
+
+The phase_1 is easy, it's just a simple strings_not_equal. The except result is write clearly : "Public speaking is very easy."
+#### result
+``Public speaking is very easy.``
+
+### Phase_2
+
+there is 2 functions for this phase.
+read_six_numbers is to verify there is 6 numbers in the input and copy it in this var : int code [7];
+
+To solve this sequence of 6 number. It's really short so could resolve by mind:
+code[i + 1] = (i + 1) * code[i]
+
+#### result
+
+``1 2 6 24 120 720``
+
+### Phase_3`
+
+It's switch case, we understood local_10 will be the case. local_9 is a char and it's cVar2. And local_8 should be  equal to hexa if (local_8 != Hexa).
+we remember the hint: the char == b.
+
+So there is 3 possibility 
+
+
+#### result
+
+
+res_1 : case 1 = ``1 b 214``
+res_2 : case 2 = ``2 b 755``
+res_3 : case 3 = ``7 b 524``
+
+### Phase_4
+It's recursive function so rewrite in c to have the result cf [phase_4.c](./scripts/bomb/phase4.c)
+#### result
+``9``
+### Phase_5
+
+We search what correspond array on ghidra : *isrveawhobpnutfg* and
+We create a [program](./scripts/bomb/phase5.c) to resolve it. 
+
+#### result
+opekma
+### Phase_6
+
+We write the phase6 from ghidra in a clear way. We find the chqin list and we resolve this puzzle.
+cf [phase6.c](./scripts/bomb/phase5.c)
+
+
+#### result
+
+4 2 6 3 1 5
+
+## Final Result
+
+We remember the README, we remove the space and we found 3 solutions:
+``Publicspeakingisveryeasy.126241207201b2149opekma426315``
+``Publicspeakingisveryeasy.126241207202b7559opekma426315``
+``Publicspeakingisveryeasy.126241207207b5249opekma426315``
+
+none of them works because there is a problem. In the subject there is 
+![problem](./img/problen_in_the_subject.png)
+
+The result is ``Publicspeakingisveryeasy.126241207201b2149opekmq426135``
+
+Now we can connect with **thor**
+
+## Thor's session
+
+In the *home* of **thor** there is a README and turtle file. 
+We understood it's a logo language, and turtle is use to draw.
+We found http://www.logointerpreter.com/turtle-editor.php , we replace the instruction like **Avance** by **fd**, etc...
+
+[turtle](./scripts/thor/turtle)
+
+[solution](./img/SLASH.png)
+
+We md5 SLASH to use for **zaz**'s session.
+
+result :  ``646da671ca01bb5d84dbb5fb2238dc8e``
 
 ------------------------------
 
@@ -564,3 +658,7 @@ To be continued...
 
 - su problem:
 	- https://unix.stackexchange.com/questions/594264/error-su-must-be-run-from-a-terminal
+
+- Turtle (logo)
+	- https://fr.wikipedia.org/wiki/Logo_(langage)
+	- http://www.logointerpreter.com/turtle-editor.php
